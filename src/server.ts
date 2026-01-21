@@ -8,6 +8,7 @@ import express from "express";
 import { appConfig } from "./config";
 import { connectMongo } from "./databases/init";
 import appRouter from "./routes";
+import { attachCurrentUser } from "./middlewares/auth";
 import { BaseError } from "./utils/errors/base.error";
 import useragent from "express-useragent";
 
@@ -20,6 +21,7 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(useragent.express());
 
+app.use(attachCurrentUser);
 app.use(appRouter);
 
 app.use(
