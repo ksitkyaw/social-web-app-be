@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-import { CommentModel, CommentDocument } from "../models";
+import { CommentModel } from "../models";
 
 const createComment = async (payload: { content: string; postId: string; userId: string }) => {
   const comment = await CommentModel.create({
@@ -10,6 +10,25 @@ const createComment = async (payload: { content: string; postId: string; userId:
   });
 
   return comment.populate("user", "name email");
+};
+
+const listComments = async (
+  filter: { postId: string },
+  options: { page: number; limit: number },
+) => {
+  const { page, limit } = options;
+  const skip = (page - 1) * limit;
+
+  const [data, total] = await Promise.all([
+    CommentModel.find({ post: filter.postId })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate("user", "name email"),
+    CommentModel.countDocuments({ post: filter.postId }),
+  ]);
+
+  return { data, total };
 };
 
 const countByUser = (userId: string) => CommentModel.countDocuments({ user: userId });
@@ -37,6 +56,7 @@ const countByPosts = async (postIds: string[]) => {
 
 export default {
   createComment,
+  listComments,
   countByUser,
   countByPost,
   countByPosts,

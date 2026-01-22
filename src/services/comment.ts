@@ -1,9 +1,17 @@
-import { CreateCommentInput, CommentDTO, CommentJSON } from "../types";
+import {
+  CommentDTO,
+  CommentJSON,
+  CommentListResponse,
+  CreateCommentInput,
+  ListCommentsInput,
+} from "../types";
 import { commentRepository, postRepository } from "../repositories";
 import { validateParams } from "../utils/validator";
-import { createCommentSchema } from "../validation-schemas";
+import { createCommentSchema, listCommentsSchema } from "../validation-schemas";
 import { NotFoundError } from "../utils/errors";
 
+const DEFAULT_PAGE = 1;
+const DEFAULT_LIMIT = 10;
 
 class CommentService {
   @validateParams(createCommentSchema)
@@ -14,7 +22,8 @@ class CommentService {
     }
 
     const comment = await commentRepository.createComment(payload);
-    const json = (comment.toJSON ? comment.toJSON() : comment) as CommentJSON;
+    const json = (comment.toJSON ? comment.toJSON() : comment) as unknown as CommentJSON;
+
 
     return {
       id: json.id,
@@ -23,6 +32,44 @@ class CommentService {
       createdAt: json.createdAt,
       updatedAt: json.updatedAt,
       author: this.resolveAuthor(json, payload.userId),
+    };
+  }
+
+  @validateParams(listCommentsSchema)
+  public async listComments(params: ListCommentsInput): Promise<CommentListResponse> {
+    const { postId, page = DEFAULT_PAGE, limit = DEFAULT_LIMIT } = params;
+
+    const post = await postRepository.findById(postId);
+    if (!post) {
+      throw new NotFoundError("Post not found");
+    }
+
+    const { data, total } = await commentRepository.listComments({ postId }, { page, limit });
+    return {
+      data: data.map((comment) => this.toCommentDTO(comment)),
+      pagination: this.buildPagination(total, page, limit),
+    };
+  }
+
+  private toCommentDTO(comment: any): CommentDTO {
+    const json = (comment.toJSON ? comment.toJSON() : comment) as CommentJSON;
+    return {
+      id: json.id,
+      postId: this.resolvePostId(json) ?? "",
+      content: json.content,
+      createdAt: json.createdAt,
+      updatedAt: json.updatedAt,
+      author: this.resolveAuthor(json, this.resolveAuthor(json, "").id ?? ""),
+    };
+  }
+
+  private buildPagination(total: number, page: number, limit: number) {
+    const totalPages = Math.ceil(total / limit) || 1;
+    return {
+      page,
+      limit,
+      total,
+      totalPages,
     };
   }
 

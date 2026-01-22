@@ -24,3 +24,16 @@ export const createComment = async (req: Request, res: Response, next: NextFunct
     next(error);
   }
 };
+
+export const listComments = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const page = req.query.page ? Number(req.query.page) : undefined;
+    const limit = req.query.limit ? Number(req.query.limit) : undefined;
+    const postId = req.params.postId;
+
+    const response = await commentService.listComments({ postId, page, limit });
+    return res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+};

@@ -1,3 +1,5 @@
+import { PaginationQuery, PaginatedResult } from "./common";
+
 export type CommentDTO = {
   id: string;
   postId: string;
@@ -19,6 +21,15 @@ export type CreateCommentParams = {
 export type CreateCommentInput = CreateCommentParams & {
   userId: string;
 };
+
+export type ListCommentsParams = PaginationQuery & {
+  postId: string;
+};
+
+export type ListCommentsInput = ListCommentsParams;
+
+export type CommentListResponse = PaginatedResult<CommentDTO>;
+
 export type CommentJSON = CommentDTO & {
   post?: string | { _id?: string };
   postId?: string;

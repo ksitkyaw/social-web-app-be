@@ -11,6 +11,8 @@ import appRouter from "./routes";
 import { attachCurrentUser } from "./middlewares/auth";
 import { BaseError } from "./utils/errors/base.error";
 import useragent from "express-useragent";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./swagger";
 
 // express app setup
 const app = express();
@@ -20,6 +22,17 @@ app.set("trust proxy", 1);
 app.use(bodyParser.json());
 app.use(cors());
 app.use(useragent.express());
+
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    explorer: true,
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  }),
+);
 
 app.use(attachCurrentUser);
 app.use(appRouter);

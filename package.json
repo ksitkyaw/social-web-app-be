@@ -20,6 +20,8 @@
     "@types/lodash": "^4.14.202",
     "@types/mongoose": "^5.11.97",
     "@types/node": "^20.10.4",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
     "concurrently": "^8.2.2",
@@ -46,6 +48,8 @@
     "lodash": "^4.17.21",
     "mongoose": "^8.0.2",
     "nodemon": "^3.0.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "ts-node": "^10.9.1"
   }
 }
