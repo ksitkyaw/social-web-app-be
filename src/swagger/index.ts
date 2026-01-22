@@ -15,6 +15,7 @@ const options: Options = {
       { name: "posts", description: "Post CRUD and listing" },
       { name: "comments", description: "Comments on posts" },
       { name: "reactions", description: "Like/unlike reactions" },
+      { name: "uploads", description: "File upload utilities" },
     ],
     components: {
       securitySchemes: {
@@ -176,6 +177,28 @@ const options: Options = {
           required: ["content"],
           properties: {
             content: { type: "string" },
+          },
+        },
+        GenerateUploadUrlRequest: {
+          type: "object",
+          required: ["folder", "contentType"],
+          properties: {
+            folder: { type: "string", example: "posts/images" },
+            contentType: { type: "string", example: "image/png" },
+            options: {
+              type: "object",
+              nullable: true,
+              properties: {
+                shorten: { type: "boolean", example: false },
+              },
+            },
+          },
+        },
+        GenerateUploadUrlResponse: {
+          type: "object",
+          properties: {
+            presignedUrl: { type: "string", example: "https://s3.amazonaws.com/..." },
+            fileUrl: { type: "string", example: "https://cdn.example.com/posts/images/..." },
           },
         },
       },
@@ -401,6 +424,33 @@ const options: Options = {
             },
             401: { description: "Unauthorized" },
             404: { description: "Post not found" },
+          },
+        },
+      },
+      "/api/uploads/presigned": {
+        post: {
+          tags: ["uploads"],
+          summary: "Generate a presigned URL for S3 uploads",
+          security: [{ BearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/GenerateUploadUrlRequest" },
+              },
+            },
+          },
+          responses: {
+            200: {
+              description: "Presigned URL generated",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/GenerateUploadUrlResponse" },
+                },
+              },
+            },
+            400: { description: "Validation error" },
+            401: { description: "Unauthorized" },
           },
         },
       },

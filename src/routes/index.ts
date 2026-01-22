@@ -2,6 +2,7 @@ import express from "express";
 
 import userRouter from "./user";
 import postRouter from "./post";
+import uploadRouter from "./upload";
 import { requireAuth } from "../middlewares/auth";
 import { listMyPosts } from "../controllers/post";
 
@@ -10,6 +11,7 @@ const apiRouter = express.Router();
 
 apiRouter.use("/", userRouter);
 apiRouter.use("/posts", postRouter);
+apiRouter.use("/uploads", uploadRouter);
 apiRouter.get("/my-posts", requireAuth, listMyPosts);
 
 router.use("/api", apiRouter);
