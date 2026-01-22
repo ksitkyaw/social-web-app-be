@@ -55,6 +55,12 @@ app.use(
 connectMongo();
 
 const port = appConfig.common.port;
-app.listen(port, "0.0.0.0", () => {
-  console.info(`app listening on port ${port}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+// You MUST export the app for Vercel to work
+export default app;
