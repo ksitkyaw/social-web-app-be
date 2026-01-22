@@ -1,26 +1,25 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import bodyParser from "body-parser";
-import cors from "cors";
 import express from "express";
+import cors from "cors";
+import bodyParser from "body-parser";
+import useragent from "express-useragent";
+import swaggerUi from "swagger-ui-express";
 
-import { appConfig } from "./config";
+import swaggerSpec from "./swagger";
 import { connectMongo } from "./databases/init";
 import appRouter from "./routes";
 import { attachCurrentUser } from "./middlewares/auth";
 import { BaseError } from "./utils/errors/base.error";
-import useragent from "express-useragent";
-import swaggerUi from "swagger-ui-express";
-import swaggerSpec from "./swagger";
+import { appConfig } from "./config";
 
-// express app setup
 const app = express();
 
 app.set("trust proxy", 1);
 
-app.use(bodyParser.json());
 app.use(cors());
+app.use(bodyParser.json());
 app.use(useragent.express());
 
 app.use(
@@ -34,33 +33,44 @@ app.use(
   }),
 );
 
+
+app.use(async (req, res, next) => {
+  try {
+    await connectMongo();
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+
 app.use(attachCurrentUser);
 app.use(appRouter);
 
 app.use(
   (error: unknown, req: express.Request, res: express.Response, next: express.NextFunction) => {
     if (error instanceof BaseError) {
-      res.status(error.httpStatusCode).json({
+      return res.status(error.httpStatusCode).json({
         name: error.name,
         message: error.message,
         body: error.body,
       });
-    } else {
-      next();
     }
+
+    console.error("Unhandled error:", error);
+    return res.status(500).json({
+      name: "InternalServerError",
+      message: "Something went wrong",
+    });
   },
 );
 
-// DB setup
-connectMongo();
 
-const port = appConfig.common.port;
-if (process.env.NODE_ENV !== 'production') {
-  const PORT = process.env.PORT || 3000;
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || appConfig.common.port || 3000;
   app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Server running on http://localhost:${PORT}`);
   });
 }
 
-// You MUST export the app for Vercel to work
 export default app;
