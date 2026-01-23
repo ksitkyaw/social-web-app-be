@@ -374,6 +374,19 @@ const options: Options = {
             404: { description: "Not found" },
           },
         },
+        delete: {
+          tags: ["posts"],
+          summary: "Delete a post",
+          security: [{ BearerAuth: [] }],
+          parameters: [
+            { name: "postId", in: "path", required: true, schema: { type: "string" } },
+          ],
+          responses: {
+            204: { description: "Post deleted" },
+            401: { description: "Unauthorized" },
+            404: { description: "Not found" },
+          },
+        },
       },
       "/api/posts/{postId}/comments": {
         post: {

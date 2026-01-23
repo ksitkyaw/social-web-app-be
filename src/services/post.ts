@@ -1,5 +1,6 @@
 import {
   CreatePostInput,
+  DeletePostInput,
   ListMyPostsInput,
   ListPostsInput,
   PostDTO,
@@ -11,6 +12,7 @@ import { commentRepository, postRepository, reactionRepository } from "../reposi
 import { validateParams } from "../utils/validator";
 import {
   createPostSchema,
+  deletePostSchema,
   listMyPostsSchema,
   listPostsSchema,
   updatePostSchema,
@@ -68,6 +70,13 @@ class PostService {
       data: data.map((post) => this.toPostDTO(post, counts.reactions, counts.comments)),
       pagination: this.buildPagination(total, page, limit),
     };
+  }
+
+  @validateParams(deletePostSchema)
+  public async deletePost(params: DeletePostInput): Promise<void> {
+    const { postId, userId } = params;
+    await this.ensureOwnPost(postId, userId);
+    await postRepository.deletePost(postId);
   }
 
   public async ensureOwnPost(postId: string, userId: string) {

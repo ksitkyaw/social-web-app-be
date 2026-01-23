@@ -61,6 +61,26 @@ Register a new user account.
 
 ---
 
+### Delete Comment
+Delete one of your comments from a specific post.
+
+* **URL:** `/api/posts/{postId}/comments/{commentId}`
+* **Method:** `DELETE`
+* **Auth Required:** Yes
+
+**Path Parameters:** `postId`, `commentId`
+
+**Success Response (204 No Content):**
+```
+<empty body>
+```
+
+**Error Responses:**
+- `401 Unauthorized` – Not authenticated or attempting to delete another user's comment.
+- `404 Not Found` – Comment or post not found.
+
+---
+
 ### Login
 Authenticate an existing user.
 
@@ -252,6 +272,26 @@ Update an existing post.
 
 **Success Response (200 OK):**
 *Returns the updated Post object.*
+
+---
+
+### Delete Post
+Remove one of your posts permanently.
+
+* **URL:** `/api/posts/{postId}`
+* **Method:** `DELETE`
+* **Auth Required:** Yes
+
+**Path Parameters:** `postId`
+
+**Success Response (204 No Content):**
+```
+<empty body>
+```
+
+**Error Responses:**
+- `401 Unauthorized` – Not authenticated or trying to delete someone else's post.
+- `404 Not Found` – Post doesn't exist.
 
 ---
 

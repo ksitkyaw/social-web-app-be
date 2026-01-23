@@ -1,6 +1,6 @@
 import { JSONSchemaType } from "ajv";
 
-import { CreateCommentInput, ListCommentsInput } from "../types";
+import { CreateCommentInput, DeleteCommentInput, ListCommentsInput } from "../types";
 
 export const createCommentSchema: JSONSchemaType<CreateCommentInput> = {
   type: "object",
@@ -21,5 +21,16 @@ export const listCommentsSchema: JSONSchemaType<ListCommentsInput> = {
     limit: { type: "number", minimum: 1, maximum: 50, nullable: true },
   },
   required: ["postId"],
+  additionalProperties: false,
+};
+
+export const deleteCommentSchema: JSONSchemaType<DeleteCommentInput> = {
+  type: "object",
+  properties: {
+    postId: { type: "string", minLength: 1 },
+    commentId: { type: "string", minLength: 1 },
+    userId: { type: "string", minLength: 1 },
+  },
+  required: ["postId", "commentId", "userId"],
   additionalProperties: false,
 };

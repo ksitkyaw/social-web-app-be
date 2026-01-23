@@ -59,3 +59,18 @@ export const listPosts = async (req: Request, res: Response, next: NextFunction)
     next(error);
   }
 };
+
+export const deletePost = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.currentUser) {
+      throw new AuthenticationError();
+    }
+    await postService.deletePost({
+      postId: req.params.postId,
+      userId: req.currentUser.id,
+    });
+    return res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+};

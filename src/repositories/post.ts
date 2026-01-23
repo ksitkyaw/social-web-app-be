@@ -51,6 +51,8 @@ const listPosts = async (
 
 const countByUser = (userId: string) => PostModel.countDocuments({ user: userId });
 
+const deletePost = (postId: string) => PostModel.findByIdAndDelete(postId);
+
 export default {
   createPost,
   findById,
@@ -58,4 +60,5 @@ export default {
   updatePost,
   listPosts,
   countByUser,
+  deletePost,
 };

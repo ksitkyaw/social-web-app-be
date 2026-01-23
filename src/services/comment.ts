@@ -3,12 +3,13 @@ import {
   CommentJSON,
   CommentListResponse,
   CreateCommentInput,
+  DeleteCommentInput,
   ListCommentsInput,
 } from "../types";
 import { commentRepository, postRepository } from "../repositories";
 import { validateParams } from "../utils/validator";
-import { createCommentSchema, listCommentsSchema } from "../validation-schemas";
-import { NotFoundError } from "../utils/errors";
+import { createCommentSchema, deleteCommentSchema, listCommentsSchema } from "../validation-schemas";
+import { AuthorizationError, NotFoundError } from "../utils/errors";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 10;
@@ -22,8 +23,7 @@ class CommentService {
     }
 
     const comment = await commentRepository.createComment(payload);
-    const json = (comment.toJSON ? comment.toJSON() : comment) as unknown as CommentJSON;
-
+    const json = this.toCommentJSON(comment);
 
     return {
       id: json.id,
@@ -51,8 +51,26 @@ class CommentService {
     };
   }
 
+  @validateParams(deleteCommentSchema)
+  public async deleteComment(params: DeleteCommentInput): Promise<void> {
+    const { postId, commentId, userId } = params;
+    const comment = await commentRepository.findById(commentId);
+    if (!comment) {
+      throw new NotFoundError("Comment not found");
+    }
+    const json = this.toCommentJSON(comment);
+    if (this.resolvePostId(json) !== postId) {
+      throw new AuthorizationError("Comment does not belong to this post");
+    }
+    const author = this.resolveAuthor(json, userId);
+    if (author.id !== userId) {
+      throw new AuthorizationError("You can only delete your own comments");
+    }
+    await commentRepository.deleteComment(commentId);
+  }
+
   private toCommentDTO(comment: any): CommentDTO {
-    const json = (comment.toJSON ? comment.toJSON() : comment) as CommentJSON;
+    const json = this.toCommentJSON(comment);
     return {
       id: json.id,
       postId: this.resolvePostId(json) ?? "",
@@ -104,6 +122,10 @@ class CommentService {
       name: user.name,
       email: user.email,
     };
+  }
+
+  private toCommentJSON(comment: any): CommentJSON {
+    return (comment?.toJSON ? comment.toJSON() : comment) as unknown as CommentJSON;
   }
 }
 

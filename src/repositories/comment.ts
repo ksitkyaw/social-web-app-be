@@ -12,6 +12,8 @@ const createComment = async (payload: { content: string; postId: string; userId:
   return comment.populate("user", "name email");
 };
 
+const findById = (commentId: string) => CommentModel.findById(commentId).populate("user", "name email");
+
 const listComments = async (
   filter: { postId: string },
   options: { page: number; limit: number },
@@ -54,10 +56,14 @@ const countByPosts = async (postIds: string[]) => {
   }, {});
 };
 
+const deleteComment = (commentId: string) => CommentModel.findByIdAndDelete(commentId);
+
 export default {
   createComment,
+  findById,
   listComments,
   countByUser,
   countByPost,
   countByPosts,
+  deleteComment,
 };

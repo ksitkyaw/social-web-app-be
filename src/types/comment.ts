@@ -41,3 +41,9 @@ export type CommentJSON = CommentDTO & {
   } | string;
   author?: CommentDTO["author"];
 };
+
+export type DeleteCommentInput = {
+  postId: string;
+  commentId: string;
+  userId: string;
+};

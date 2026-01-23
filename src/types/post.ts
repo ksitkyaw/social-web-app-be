@@ -42,3 +42,8 @@ export type ListMyPostsInput = PaginationQuery & {
 };
 
 export type ListPostsInput = PaginationQuery;
+
+export type DeletePostInput = {
+  postId: string;
+  userId: string;
+};

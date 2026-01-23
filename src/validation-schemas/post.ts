@@ -2,6 +2,7 @@ import { JSONSchemaType } from "ajv";
 
 import {
   CreatePostInput,
+  DeletePostInput,
   ListMyPostsInput,
   ListPostsInput,
   UpdatePostInput,
@@ -50,5 +51,15 @@ export const listPostsSchema: JSONSchemaType<ListPostsInput> = {
     limit: { type: "integer", minimum: 1, maximum: 50, default: 10, nullable: true },
   },
   required: [],
+  additionalProperties: false,
+};
+
+export const deletePostSchema: JSONSchemaType<DeletePostInput> = {
+  type: "object",
+  properties: {
+    postId: { type: "string", minLength: 1 },
+    userId: { type: "string", minLength: 1 },
+  },
+  required: ["postId", "userId"],
   additionalProperties: false,
 };

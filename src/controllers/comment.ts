@@ -37,3 +37,19 @@ export const listComments = async (req: Request, res: Response, next: NextFuncti
     next(error);
   }
 };
+
+export const deleteComment = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.currentUser) {
+      throw new AuthenticationError();
+    }
+    await commentService.deleteComment({
+      postId: req.params.postId,
+      commentId: req.params.commentId,
+      userId: req.currentUser.id,
+    });
+    return res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+};
