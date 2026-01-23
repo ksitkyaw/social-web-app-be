@@ -33,21 +33,21 @@ PORT=5500
 NODE_ENV=development
 
 # Database Connection (MongoDB Atlas)
-# Replace <password> and <dbname> with your actual details
-MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/?appName=social-web-app
+MONGODB_URI=
 
-# AWS Configuration (S3 & CloudFront)
-AWS_REGION=ap-southeast-1
-AWS_ACCESS_KEY_ID=your_new_access_key_id
-AWS_SECRET_ACCESS_KEY=your_new_secret_access_key
-AWS_S3_BUCKET_NAME=khant-project-assets
-AWS_CLOUDFRONT_ENDPOINT=d2yfy0hrhqx5fs.cloudfront.net
+# AWS Configuration (S3 & CloudFront) for file upload endpoint
+AWS_REGION=
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_S3_BUCKET_NAME=
+AWS_CLOUDFRONT_ENDPOINT=
 ```
 
 ### How to get these credentials:
 *   **MongoDB URI:** Go to MongoDB Atlas > Database > Connect > Drivers > Node.js.
 *   **AWS Keys:** Go to AWS IAM > Users > Security Credentials > Create Access Key.
 *   **S3 Bucket:** Create a bucket in the AWS S3 Console.
+*   **CloudFront Endpoint:** Create a distribution in the AWS CloudFront Console.
 
 ## 4. Running the Application
 
